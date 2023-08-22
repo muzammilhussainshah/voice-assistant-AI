@@ -1,36 +1,74 @@
-import { View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { View, Text, SafeAreaView, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function WelcomeScreen() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+
   return (
-    <SafeAreaView className="flex-1 flex justify-around bg-white">
-        {/* title */}
-        <View className="space-y-2">
-            <Text style={{fontSize: wp(10)}} className="text-center font-bold text-gray-700">
-                Jarvis
-            </Text>
-            <Text style={{fontSize: wp(4)}} className="text-center tracking-wider font-semibold text-gray-600">
-                The future is here, powerd by AI.
-            </Text>
-        </View>
-        
-        {/* assistant image */}
-        <View className="flex-row justify-center">
-            <Image  
-                source={require('../../assets/images/welcome.png')}
-                style={{height: wp(75), width: wp(75)}}
-            />
-        </View>
-        
-        {/* start button */}
-        <TouchableOpacity onPress={()=> navigation.navigate('Home')} className="bg-emerald-600 mx-5 p-4 rounded-2xl">
-            <Text style={{fontSize: wp(6)}} className="text-center font-bold text-white">
-                Get Started
-            </Text>
-        </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      {/* title */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>CHITTI 7.0</Text>
+        <Text style={styles.subtitleText}>The future is here, Generative AI.</Text>
+      </View>
+
+      {/* assistant image */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../../assets/images/welcome.png')}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* start button */}
+      <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
+        <Text style={styles.buttonText}>Get Started</Text>
+      </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-around',
+    backgroundColor: 'white',
+  },
+  titleContainer: {
+    alignItems: 'center',
+  },
+  titleText: {
+    fontSize: wp(10),
+    fontWeight: 'bold',
+    color: 'gray',
+  },
+  subtitleText: {
+    fontSize: wp(4),
+    fontWeight: 'bold',
+    color: 'gray',
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  image: {
+    height: wp(75),
+    width: wp(75),
+  },
+  button: {
+    
+    backgroundColor: '#48B39B',
+    marginHorizontal: wp(5),
+    paddingVertical: hp(2),
+    borderRadius: wp(5),
+  },
+  buttonText: {
+    fontSize: wp(6),
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+});

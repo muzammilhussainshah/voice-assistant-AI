@@ -3,6 +3,7 @@ import {
   View,
   Text,
   SafeAreaView,
+  StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -148,149 +149,195 @@ const App = () => {
 
 
   return (
-    <View className="flex-1 bg-white">
-      {/* <StatusBar barStyle="dark-content" /> */}
-      <SafeAreaView className="flex-1 flex mx-5">
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {/* bot icon */}
-        <View className="flex-row justify-center">
+        <View style={styles.botIconContainer}>
           <Image  
               source={require('../../assets/images/bot.png')}
-              style={{height: hp(15), width: hp(15)}}
+              style={styles.botIcon}
           />
         </View>
-        
+
         {/* features || message history */}
-        {
-          messages.length>0? (
-            <View className="space-y-2 flex-1">
-              <Text className="text-gray-700 font-semibold ml-1" style={{fontSize: wp(5)}}>Assistant</Text>
-        
-              <View 
-                style={{height: hp(58)}} 
-                className="bg-neutral-200 rounded-3xl p-4">
-                  <ScrollView  
-                    ref={scrollViewRef} 
-                    bounces={false} 
-                    className="space-y-4" 
-                    showsVerticalScrollIndicator={false}
-                  >
-                    {
-                      messages.map((message, index)=>{
-                        if(message.role=='assistant'){
-                          if(message.content.includes('https')){
-                            // result is an ai image
-                            return (
-                              <View key={index} className="flex-row justify-start">
-                                <View 
-                                  className="p-2 flex rounded-2xl bg-emerald-100 rounded-tl-none">
-                                    <Image  
-                                      source={{uri: message.content}} 
-                                      className="rounded-2xl"  
-                                      resizeMode="contain" 
-                                      style={{height: wp(60), width: wp(60)}} 
-                                    />
-                                </View>
-                              </View>
-                              
-                              
-                            )
-                          }else{
-                            // chat gpt response
-                            return (
-                              <View 
-                                key={index} style={{width: wp(70)}} 
-                                className="bg-emerald-100 p-2 rounded-xl rounded-tl-none">
-                                <Text className="text-neutral-800" style={{fontSize: wp(4)}}  >
-                                  {message.content}
-                                </Text>
-                              </View>
-                            )
-                          }
-                        }else{
-                          // user input text
-                          return (
-                            <View key={index} className="flex-row justify-end">
-                              <View 
-                                style={{width: wp(70)}} 
-                                className="bg-white p-2 rounded-xl rounded-tr-none">
-                                <Text style={{fontSize: wp(4)}}  >
-                                  {message.content}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        }
-                        
-                        
-                      })
+        {messages.length > 0 ? (
+          <View style={styles.assistantContainer}>
+            <Text style={styles.assistantTitle}>Assistant</Text>
+
+            <View style={styles.messageHistoryContainer}>
+              <ScrollView
+                ref={scrollViewRef}
+                bounces={false}
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+              >
+                {messages.map((message, index) => {
+                  if (message.role === 'assistant') {
+                    if (message.content.includes('https')) {
+                      // result is an ai image
+                      return (
+                        <View key={index} style={styles.chatBubble}>
+                          <Image  
+                            source={{ uri: message.content }}
+                            style={{ flex: 1, height: wp(60), width: wp(60) }}
+                            resizeMode="contain"
+                          />
+                        </View>
+                      );
+                    } else {
+                      // chat gpt response
+                      return (
+                        <View key={index} style={styles.chatBubble}>
+                          <Text style={styles.chatBubbleText}>
+                            {message.content}
+                          </Text>
+                        </View>
+                      );
                     }
-                  </ScrollView>
-              </View>
+                  } else {
+                    // user input text
+                    return (
+                      <View key={index} style={styles.userChatBubble}>
+                        <Text style={styles.chatBubbleText}>
+                          {message.content}
+                        </Text>
+                      </View>
+                    );
+                  }
+                })}
+              </ScrollView>
             </View>
-          ): (
-              <Features />
-          )
-        }
-        
-        
+          </View>
+        ) : (
+          <Features />
+        )}
+
         {/* recording, clear and stop buttons */}
-        <View className="flex justify-center items-center">
-          {
-            loading? (
+        <View style={styles.recordingContainer}>
+          {loading ? (
+            <Image 
+              source={require('../../assets/images/loading.gif')}
+              style={styles.loadingIcon}
+            />
+          ) : recording ? (
+            <TouchableOpacity onPress={stopRecording} style={styles.recordingIcon}>
+              {/* recording stop button */}
               <Image 
-                source={require('../../assets/images/loading.gif')}
-                style={{width: hp(10), height: hp(10)}}
+                source={require('../../assets/images/voiceLoading.gif')}
+                style={styles.recordingIcon}
               />
-            ):
-              recording ? (
-                <TouchableOpacity className="space-y-2" onPress={stopRecording}>
-                  {/* recording stop button */}
-                  <Image 
-                    className="rounded-full" 
-                    source={require('../../assets/images/voiceLoading.gif')}
-                    style={{width: hp(10), height: hp(10)}}
-                  />
-                </TouchableOpacity>
-                
-              ) : (
-                <TouchableOpacity onPress={startRecording}>
-                  {/* recording start button */}
-                  <Image 
-                    className="rounded-full" 
-                    source={require('../../assets/images/recordingIcon.png')}
-                    style={{width: hp(10), height: hp(10)}}
-                  />
-                </TouchableOpacity>
-              )
-          }
-          {
-            messages.length>0 && (
-              <TouchableOpacity 
-                onPress={clear} 
-                className="bg-neutral-400 rounded-3xl p-2 absolute right-10"
-              >
-                <Text className="text-white font-semibold">Clear</Text>
-              </TouchableOpacity>
-            )
-          }
-          {
-            speaking && (
-              <TouchableOpacity 
-                onPress={stopSpeaking} 
-                className="bg-red-400 rounded-3xl p-2 absolute left-10"
-              >
-                <Text className="text-white font-semibold">Stop</Text>
-              </TouchableOpacity>
-            )
-          }
-            
-            
-          
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={startRecording} style={styles.recordingIcon}>
+              {/* recording start button */}
+              <Image 
+                source={require('../../assets/images/recordingIcon.png')}
+                style={styles.recordingIcon}
+              />
+            </TouchableOpacity>
+          )}
+
+          {messages.length > 0 && (
+            <TouchableOpacity onPress={clear} style={styles.clearButton}>
+              <Text style={styles.buttonText}>Clear</Text>
+            </TouchableOpacity>
+          )}
+
+          {speaking && (
+            <TouchableOpacity onPress={stopSpeaking} style={styles.stopButton}>
+              <Text style={styles.buttonText}>Stop</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        
       </SafeAreaView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  botIconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  botIcon: {
+    height: hp(15),
+    width: hp(15),
+  },
+  assistantContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    // justifyContent: 'space-y',
+  },
+  assistantTitle: {
+    color: 'gray',
+    fontWeight: 'bold',
+    marginLeft: wp(1),
+    fontSize: wp(5),
+  },
+  messageHistoryContainer: {
+    height: hp(58),
+    backgroundColor: '#E5E7EB',
+    borderRadius: hp(2),
+    paddingHorizontal: hp(2),
+    // paddingVertical: hp(1.5),
+    // padding: hp(4),
+  },
+  chatBubble: {
+    width: wp(70),
+    backgroundColor: '#10B981',
+    padding: hp(2),
+    marginTop: hp(1),
+    borderRadius: hp(2),
+  },
+  chatBubbleText: {
+    color: '#1F2937',
+    fontSize: wp(4),
+  },
+  userChatBubble: {
+    alignSelf:'flex-end',
+    width: wp(70),
+    backgroundColor: 'white',
+    padding: hp(2),
+    borderRadius: hp(2),
+    marginTop: hp(1),
+
+  },
+  recordingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recordingIcon: {
+    width: hp(10),
+    height: hp(10),
+    borderRadius: hp(5),
+  },
+  loadingIcon: {
+    width: hp(10),
+    height: hp(10),
+  },
+  clearButton: {
+    backgroundColor: '#9CA3AF',
+    borderRadius: hp(2),
+    padding: hp(2),
+    position: 'absolute',
+    right: hp(2),
+  },
+  stopButton: {
+    backgroundColor: '#EF4444',
+    borderRadius: hp(2),
+    padding: hp(2),
+    position: 'absolute',
+    left: hp(2),
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
 
 export default App;
